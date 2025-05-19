@@ -9,8 +9,8 @@ function App() {
     <div>
       <AppLayout />
       <Banner />
-      <EndangeredList />
       <AllSpecies />
+      <EndangeredList />
     </div>
   );
 }

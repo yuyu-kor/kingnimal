@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSpeciesQuery } from "../hooks/useSpecies";
 import styled from "styled-components";
-import ReactPaginate from "react-paginate";
 
 const Grid = styled.div`
   display: grid;
@@ -23,6 +22,12 @@ const Card = styled.div`
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   background-color: #fff;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transform: scale(1.03);
+  }
 `;
 
 const Image = styled.div`
@@ -58,47 +63,7 @@ const DetailButton = styled.a`
   }
 `;
 
-const PaginationWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-
-  .pagination {
-    gap: 5px;
-  }
-
-  .page-item a {
-    text-decoration: none;
-    color: inherit;
-    padding: 6px 12px;
-    display: block;
-  }
-
-  .page-item {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-  }
-
-  .page-item:hover {
-    background-color: #f5f5f5 !important;
-  }
-
-  .page-item.disabled {
-    opacity: 0.5;
-  }
-
-  .active {
-    background-color: #ffd700;
-    color: #333;
-    font-weight: bold;
-    border-color: #ffd700;
-  }
-`;
-
 const AllSpecies = () => {
-  const [page, setPage] = useState(1);
-
   const { data, isLoading, isError, error } = useSpeciesQuery();
 
   if (isLoading) {
@@ -111,8 +76,6 @@ const AllSpecies = () => {
   const slicedResults = (data?.results ?? [])
     .sort(() => Math.random() - 0.5)
     .slice(0, 8);
-
-  const handlePageChange = () => {};
 
   return (
     <div>
@@ -155,28 +118,6 @@ const AllSpecies = () => {
           );
         })}
       </Grid>
-      <PaginationWrapper>
-        <ReactPaginate
-          previousLabel="<"
-          nextLabel=">"
-          pageClassName="page-item"
-          pageLinkClassName=""
-          previousClassName="page-item"
-          previousLinkClassName="page-link"
-          nextClassName="page-item"
-          nextLinkClassName="page-link"
-          breakLabel="..."
-          breakClassName="page-item"
-          breakLinkClassName="page-link"
-          pageCount={page} //전체 페이지 수
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={5}
-          onPageChange={handlePageChange}
-          containerClassName="pagination"
-          activeClassName="active"
-          // forcePage={pageOffset}
-        />
-      </PaginationWrapper>
     </div>
   );
 };

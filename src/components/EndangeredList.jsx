@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useEndangeredAnimals } from "../hooks/useEndangeredAnimals";
+import ReactPaginate from "react-paginate";
 
 const Grid = styled.div`
   display: grid;
@@ -22,6 +23,12 @@ const Card = styled.div`
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   background-color: #fff;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); // 그림자 더 진하게
+    transform: scale(1.03); // 살짝 확대
+  }
 `;
 
 const Image = styled.div`
@@ -57,8 +64,47 @@ const DetailButton = styled.a`
   }
 `;
 
+const PaginationWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+
+  .pagination {
+    gap: 5px;
+  }
+
+  .page-item a {
+    text-decoration: none;
+    color: inherit;
+    padding: 6px 12px;
+    display: block;
+  }
+
+  .page-item {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+
+  .page-item:hover {
+    background-color: #f5f5f5 !important;
+  }
+
+  .page-item.disabled {
+    opacity: 0.5;
+  }
+
+  .active {
+    background-color: #ffd700;
+    color: #333;
+    font-weight: bold;
+    border-color: #ffd700;
+  }
+`;
+
 const EndangeredList = () => {
-  const { data, isLoading, isError, error } = useEndangeredAnimals();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError, error } = useEndangeredAnimals(page);
   console.log("data", data);
 
   if (isLoading) {
@@ -68,10 +114,9 @@ const EndangeredList = () => {
     return <p>{error.message}</p>;
   }
 
-  // 멸종위기종 8개 랜덤으로 보여주기
-  const slicedResults = (data?.results ?? [])
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 8);
+  const handlePageChange = ({ selected }) => {
+    setPage(selected + 1);
+  };
 
   return (
     <div>
@@ -86,7 +131,7 @@ const EndangeredList = () => {
       </h2>
 
       <Grid>
-        {slicedResults.map((item) => {
+        {data.results.map((item) => {
           return (
             <Card key={item.id}>
               <Image
@@ -115,6 +160,28 @@ const EndangeredList = () => {
           );
         })}
       </Grid>
+      <PaginationWrapper>
+        <ReactPaginate
+          previousLabel="<"
+          nextLabel=">"
+          pageClassName="page-item"
+          pageLinkClassName=""
+          previousClassName="page-item"
+          previousLinkClassName="page-link"
+          nextClassName="page-item"
+          nextLinkClassName="page-link"
+          breakLabel="..."
+          breakClassName="page-item"
+          breakLinkClassName="page-link"
+          pageCount={100} //전체 페이지 수 제한
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={5}
+          onPageChange={handlePageChange}
+          containerClassName="pagination"
+          activeClassName="active"
+          forcePage={page - 1} //현재 페이지 표시
+        />
+      </PaginationWrapper>
     </div>
   );
 };

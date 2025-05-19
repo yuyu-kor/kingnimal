@@ -6,6 +6,7 @@ const fetchSpecies = () => {
     params: {
       rank: "species",
       is_active: true,
+      locale: "ko",
     },
   });
 };
